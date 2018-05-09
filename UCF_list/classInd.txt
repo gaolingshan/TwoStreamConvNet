@@ -1,5 +1,0 @@
-1 Basketball
-2 Biking
-3 Diving
-4 HorseRiding
-5 TennisSwing
