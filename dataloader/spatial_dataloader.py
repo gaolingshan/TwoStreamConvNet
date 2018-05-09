@@ -24,9 +24,9 @@ class spatial_dataset(Dataset):
             name = 'HandStandPushups_'+g
             path = self.root_dir + 'HandstandPushups'+'/separated_images/v_'+name+'/v_'+name+'_'
         else:
-            #path = self.root_dir + video_name.split('_')[0]+'/separated_images/v_'+video_name+'/v_'+video_name+'_'
-            path = self.root_dir + '/v_'+video_name
-        img = Image.open(path +'/frame'+str(index).zfill(6)+'.jpg')
+            path = self.root_dir + 'v_' + video_name
+         
+        img = Image.open(path + '/frame%06d.jpg'%index)
         transformed_img = self.transform(img)
         img.close()
 
@@ -35,20 +35,20 @@ class spatial_dataset(Dataset):
     def __getitem__(self, idx):
 
         if self.mode == 'train':
-            video_name, nb_clips = list(self.keys)[idx].split(' ')
+            video_name, nb_clips = self.keys[idx].split(' ')
             nb_clips = int(nb_clips)
             clips = []
-            clips.append(random.randint(1, nb_clips//3))
-            clips.append(random.randint(nb_clips//3, nb_clips*2//3))
-            clips.append(random.randint(nb_clips*2//3, nb_clips+1))
+            clips.append(random.randint(1, nb_clips/3))
+            clips.append(random.randint(nb_clips/3, nb_clips*2/3))
+            clips.append(random.randint(nb_clips*2/3, nb_clips+1))
             
         elif self.mode == 'val':
-            video_name, index = list(self.keys)[idx].split(' ')
+            video_name, index = self.keys[idx].split(' ')
             index =abs(int(index))
         else:
             raise ValueError('There are only train and val mode')
 
-        label = list(self.values)[idx]
+        label = self.values[idx]
         label = int(label)-1
         
         if self.mode=='train':
@@ -80,7 +80,7 @@ class spatial_dataloader():
 
     def load_frame_count(self):
         #print '==> Loading frame number of each video'
-        with open('dic/frame_count.pickle','rb') as file:
+        with open('/home/lg2755/dl_project/TwoStreamConvNet/dataloader/dic/frame_count.pickle','rb') as file:
             dic_frame = pickle.load(file)
         file.close()
 
@@ -110,7 +110,7 @@ class spatial_dataloader():
             self.dic_training[key] = self.train_video[video]
                     
     def val_sample20(self):
-        print ('==> sampling testing frames')
+        print '==> sampling testing frames'
         self.dic_testing={}
         for video in self.test_video:
             nb_frame = self.frame_count[video]-10+1
@@ -127,8 +127,8 @@ class spatial_dataloader():
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
                 ]))
-        print ('==> Training data :',len(training_set),'frames')
-        print (training_set[1][0]['img1'].size())
+        print '==> Training data :',len(training_set),'frames'
+        print training_set[1][0]['img1'].size()
 
         train_loader = DataLoader(
             dataset=training_set, 
@@ -144,8 +144,8 @@ class spatial_dataloader():
                 transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
                 ]))
         
-        print ('==> Validation data :',len(validation_set),'frames')
-        print (validation_set[1][1].size())
+        print '==> Validation data :',len(validation_set),'frames'
+        print validation_set[1][1].size()
 
         val_loader = DataLoader(
             dataset=validation_set, 
@@ -161,7 +161,7 @@ class spatial_dataloader():
 if __name__ == '__main__':
     
     dataloader = spatial_dataloader(BATCH_SIZE=1, num_workers=1, 
-                                path='/Users/Miller/Documents/Courses/DSGA1008/project/jpegs_256', 
-                                ucf_list='/Users/Miller/Documents/Courses/DSGA1008/project/TwoStreamConvNet/UCF_list/',
+                                path='/home/lg2755/dl_project/data/jpegs_256/', 
+                                ucf_list='/home/lg2755/dl_project/UCF_list/',
                                 ucf_split='01')
     train_loader,val_loader,test_video = dataloader.run()
