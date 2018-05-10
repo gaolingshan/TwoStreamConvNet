@@ -102,7 +102,7 @@ class Motion_DataLoader():
         
     def load_frame_count(self):
         #print '==> Loading frame number of each video'
-        with open('dic/frame_count.pickle','rb') as file:
+        with open('/home/xy990/dl_project/TwoStreamConvNet/dataloader/dic/frame_count.pickle','rb') as file:
             dic_frame = pickle.load(file)
         file.close()
 
@@ -181,8 +181,8 @@ class Motion_DataLoader():
 
 if __name__ == '__main__':
     data_loader =Motion_DataLoader(BATCH_SIZE=1,num_workers=1,in_channel=10,
-                                        path='/home/ubuntu/data/UCF101/tvl1_flow/',
-                                        ucf_list='/home/ubuntu/cvlab/pytorch/ucf101_two_stream/github/UCF_list/',
+                                        path='/home/xy990/dl_project/data/tvl1_flow/',
+                                        ucf_list='/home/xy990/dl_project/UCF_list/',
                                         ucf_split='01'
                                         )
     train_loader,val_loader,test_video = data_loader.run()
